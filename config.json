@@ -1,0 +1,65 @@
+{ "hosts"    : ["localhost"],
+  "programs" : {
+      "tuqtng"       : {
+          "host" : "localhost",
+          "user" : "prataprc",
+          "local" : [
+              ["scp", "-q",
+               "/Users/prataprc/devgo/src/github.com/couchbaselabs/tuqtng/tuqtng",
+               "localhost:/Users/prataprc/devindex"
+              ]
+          ],
+          "remote" : [
+              "cd ~/devindex; ./tuqtng -couchbase http://localhost:9000 -log HTTP,NETWORK,PIPELE,CATALOG -dev"
+          ],
+          "log.color": "blue"
+      },
+      "indexer"       : {
+          "host" : "localhost",
+          "user" : "prataprc",
+          "local" : [
+              ["scp", "-q",
+               "~/devgo/src/github.com/couchbaselabs/indexing/indexer/indexer",
+               "localhost:~/devindex"
+              ]
+          ],
+          "remote" : [
+              "cd ~/devindex; ./indexer"
+          ],
+          "log.color": "yellow"
+      },
+      "index_manager" : {
+          "host" : "localhost",
+          "user" : "prataprc",
+          "local" : [
+              ["scp", "-q",
+               "~/devgo/src/github.com/couchbaselabs/indexing/index_manager/index_manager",
+               "localhost:~/devindex"
+              ]
+          ],
+          "remote" : [
+              "cd ~/devindex; ./index_manager"
+          ],
+          "log.color": "cyan"
+      },
+      "projector"       : {
+          "host" : "localhost",
+          "user" : "prataprc",
+          "local" : [
+              ["scp", "-q",
+               "~/devgo/src/github.com/couchbaselabs/indexing/projector/projector",
+               "localhost:~/devindex"
+              ]
+          ],
+          "remote" : [
+              "cd ~/devindex; ./projector -proto upr -kvhost localhost -imhost localhost -port 9000"
+          ],
+          "log.color": "magenta"
+      }
+  },
+  "log.maxsize"       : 10000,
+  "log.stdout"        : true,
+  "log.stdout.filter" : [],
+  "log.stderr"        : true,
+  "log.stderr.filter" : []
+}

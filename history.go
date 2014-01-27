@@ -1,45 +1,34 @@
-package cbsh
+package main
 
 import (
     "bufio"
-    "fmt"
     "os"
-    "path"
-
-    "github.com/sbinet/liner"
+    "github.com/prataprc/liner"
+    "github.com/prataprc/cbsh/api"
 )
 
-var HISTORY_FILE = "./cbsh_history"
-
-func LoadHistory(liner *liner.State, dir string) {
-    historyFile := path.Join(dir, HISTORY_FILE)
-    if dir != "" {
-        ReadHistoryFromFile(liner, historyFile)
-    }
+func LoadHistory(c *api.Context) {
+    historyFile := c.Cursh.HistoryFile()
+    ReadHistoryFromFile(c.Liner, historyFile)
 }
 
-func UpdateHistory(liner *liner.State, dir, line string) {
-    liner.AppendHistory(line)
-    if dir != "" {
-        WriteHistoryToFile(liner, dir+HISTORY_FILE)
-    }
+func UpdateHistory(c *api.Context, line string) {
+    c.Liner.AppendHistory(line)
+    WriteHistoryToFile(c.Liner, c.Cursh.HistoryFile())
 }
 
-func WriteHistoryToFile(liner *liner.State, path string) error {
+func WriteHistoryToFile(liner *liner.State, path string) (err error) {
     f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
     if err != nil {
         return err
     }
-
     defer f.Close()
 
     writer := bufio.NewWriter(f)
-    if _, err = liner.WriteHistory(writer); err != nil {
-        fmt.Printf("Error updating %v file: %v\n", HISTORY_FILE, err)
-    } else {
+    if _, err = liner.WriteHistory(writer); err == nil {
         writer.Flush()
     }
-    return nil
+    return
 }
 
 func ReadHistoryFromFile(liner *liner.State, path string) error {
